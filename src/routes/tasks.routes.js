@@ -4,7 +4,7 @@ import { authRequire } from "../middlewares/validateToken";
 
 const router = Router();
 
-router.get("/tasks/:id",authRequire,getAllTasksByUserId);
+router.get("/tasks",authRequire,getAllTasksByUserId);
 router.get("/task/:id",authRequire,getOneTaskById);
 
 router.post("/task/add",authRequire,addTask);

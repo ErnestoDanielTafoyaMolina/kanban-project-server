@@ -1,7 +1,8 @@
-
+//importacion de bcrypt para encriptacion
+import bcrypt from "bcryptjs";
 import { querys, getConnection, sql } from "../db";
-import bcrypt from "bcryptjs"
 import { createAccessToken } from "../libs/jwt";
+
 export const handleLogin=async(req,res)=>{
 
     const { email, password }=req.body;

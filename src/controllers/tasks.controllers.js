@@ -1,7 +1,8 @@
 import { getConnection, querys, sql } from "../db";
 
 export const addTask = async(req,res)=>{
-    const { idUser, taskName, taskDescription, taskUrlImage } = req.body;
+    const { taskName, taskDescription, taskUrlImage } = req.body;
+    const idUser = req.user.id;
     if(!idUser || !taskName || !taskDescription){
         res.status(400).json({
             msg:"Se requiere al menos el nombre de la tarea y su descripcion "
@@ -24,7 +25,7 @@ export const addTask = async(req,res)=>{
             addedTask:addedTask.recordset
         })
     } catch (error) {
-        console.log(error);
+        console.log(error.message);
         res.status(500).json({"message":error.message})
     }
 };
@@ -55,12 +56,13 @@ export const deleteTask = async(req,res)=>{
 };
 export const editTask= async(req,res)=>{
     const idTask  = req.params.id;
+    const idUser = req.user.id;
     if(!idTask){
         return res.status(400).json({
             msg:"El id de la tarea es requerido"
         });
     };
-    const { idUser, taskName,taskDescription, taskUrlImage } = req.body;
+    const { taskName,taskDescription, taskUrlImage } = req.body;
     if(!idUser || !taskName || !taskDescription){
         res.status(400).json({
             msg:"Se requiere al menos el nombre de la tarea y su descripcion "
@@ -88,7 +90,8 @@ export const editTask= async(req,res)=>{
     }
 };
 export const getAllTasksByUserId = async(req,res)=>{
-    const userId = req.params.id;
+    console.log(req.user.id)
+    const userId = req.user.id;
     if(!userId){
         return res.status(400).json({
             msg:"El id del usuario es requerido"
