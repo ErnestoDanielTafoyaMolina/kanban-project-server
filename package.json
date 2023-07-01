@@ -1,0 +1,35 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src --exec babel-node",
+    "test": "set NODE_OPTIONS=--experimental-vm-modules && npx jest",
+    "build":"babel src -d dist",
+    "start":"node dist"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.37.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "helmet": "^7.0.0",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "mssql": "^9.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.21.8",
+    "@babel/node": "^7.20.7",
+    "@babel/preset-env": "^7.21.5",
+    "jest": "^29.5.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3"
+  }
+}
