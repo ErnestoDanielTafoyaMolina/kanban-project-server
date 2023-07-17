@@ -1,7 +1,7 @@
 //dependencias
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
+// import helmet from "helmet";
 import morgan from "morgan";
 import config from "./config";
 import cookieParser from "cookie-parser";
@@ -20,7 +20,7 @@ app.use(cors({
     credentials:true
 }));
 app.use(morgan("dev"));
-app.use(helmet());
+// app.use(helmet());
 app.use(cookieParser());
 app.use(express.urlencoded({extended:false}));
 app.use(express.json());
