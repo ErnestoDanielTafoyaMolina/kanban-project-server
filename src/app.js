@@ -5,7 +5,7 @@ import cors from "cors";
 import morgan from "morgan";
 import config from "./config";
 import cookieParser from "cookie-parser";
-
+import config from "./config";
 //rutas importadas
 
 import TasksRoutes from "./routes/tasks.routes";
@@ -16,7 +16,7 @@ app.set("port",config.port);
 
 //middlewares
 app.use(cors({
-    origin:"https://64b49dd010ab6c14de5552e9--imaginative-pavlova-47c4dc.netlify.app",
+    origin:`${config.CLIENT_URL}`,
     credentials:true
 }));
 app.use(morgan("dev"));
