@@ -5,7 +5,7 @@ import cors from "cors";
 import morgan from "morgan";
 import config from "./config";
 import cookieParser from "cookie-parser";
-import config from "./config";
+
 //rutas importadas
 
 import TasksRoutes from "./routes/tasks.routes";
