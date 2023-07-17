@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "nodemon src --exec babel-node",
     "test": "set NODE_OPTIONS=--experimental-vm-modules && npx jest",
-    "build":"babel src -d dist",
-    "start":"node dist"
+    "build": "babel src -d dist",
+    "start": "node dist"
   },
   "license": "MIT",
   "dependencies": {
@@ -17,7 +17,6 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.0",
-    "helmet": "^7.0.0",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.0",
     "mssql": "^9.1.1"
