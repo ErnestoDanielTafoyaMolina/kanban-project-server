@@ -16,7 +16,7 @@ app.set("port",config.port);
 
 //middlewares
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:"https://64b49dd010ab6c14de5552e9--imaginative-pavlova-47c4dc.netlify.app",
     credentials:true
 }));
 app.use(morgan("dev"));
