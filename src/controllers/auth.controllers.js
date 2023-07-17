@@ -1,13 +1,18 @@
 //importacion de bcrypt para encriptacion
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
 import { querys, getConnection, sql } from "../db";
 import { createAccessToken } from "../libs/jwt";
+import  config  from "../config";
 
+
+//  handleLogin maneja el proceso de inicio de sesión del usuario. Obtiene el correo electrónico y la contraseña de la solicitud y verifica que ambos estén presentes. 
 export const handleLogin=async(req,res)=>{
 
     const { email, password }=req.body;
     if(!email || !password){
-        return res.status(400).json({ message: 'Correo electrónico y contraseña requeridos' });
+        return res.status(400).json(['Correo electrónico y contraseña requeridos']);
     }
     try {
   
@@ -20,27 +25,28 @@ export const handleLogin=async(req,res)=>{
         
 
         if(!userFound.recordset[0]){
-          return res.status(409).json({
-            msg:"El correo no existe"
-          });
+          return res.status(409).json(
+            ["El correo no está registrado"]
+          );
         };
       
       // console.log(userFound)
       const { idUser,userName,userEmail, userPassword } = await userFound.recordset[0];
       // const userPassword = userFound.recordset[0].userPassword;
 
+//se compara la contraseña proporcionada con la contraseña almacenada en la base de datos
       const isMatch= await bcrypt.compare(password,userPassword);
       if(!isMatch){
-        return res.status(400).json({
-          msg:"contraseña o correo erroneos"
-        });
+        return res.status(400).json(
+          ["contraseña o correo erroneos"]
+        );
       };
-       
+//Si las credenciales son correctas, se crea un token de acceso y se devuelve como una cookie en la respuesta
       const token = await createAccessToken({
         id:idUser,
         username:userName
       })
-
+//se ejecuta cuando el registro de un nuevo usuario es exitoso
       return res
         .status(200)
         .cookie("token",token)
@@ -58,7 +64,7 @@ export const handleLogin=async(req,res)=>{
 export const handleRegister = async (req, res) => {
     const { username, email, password } = req.body;
     if(!username || !email || !password){
-      return res.status(400).json({ message: 'Todos los campos son requeridos' });
+      return res.status(400).json(['Todos los campos son requeridos']);
     };
     try {
       const pool = await getConnection();
@@ -68,11 +74,17 @@ export const handleRegister = async (req, res) => {
         .query(querys.checkPassword);
 
         if(userFound.recordset.length>0){
-          return res.status(409).json({
-            msg:"El correo ya está en uso"
-          });
+          return res.status(409).json(
+            ["El correo ya está en uso"]
+          );
         };
 
+        if(password.length<6){
+          return res.status(400).json(
+            ["La contraseña debe tener al menos 6 caracteres"]
+          )
+        }
+//para generar el hash del password proporcionado. El número 10 indica el costo del algoritmo  de hashing
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await pool
         .request()
@@ -101,14 +113,14 @@ export const handleRegister = async (req, res) => {
       return res.status(500).json({ message: 'Error en el servidor' });
     }
   };
-
+//se encarga de cerrar sesión del usuario borra la cookie llamada "token" estableciendo su valor como una cadena vacía
 export const logout = async(req, res) =>{
   res.cookie('token',"",{
     expires:new Date(0)
   });
   return res.sendStatus(200);
 };
-
+//se utiliza para obtener el perfil de un usuario. Utiliza el ID del usuario extraído de req.user para realizar una consulta a la base de datos y obtener la información del usuario utilizando la consulta 
 export const profile = async(req,res)=>{
     const { id } = req.user;
     try {
@@ -120,16 +132,20 @@ export const profile = async(req,res)=>{
         .query(querys.userProfile);
 
        if(!userFound.recordset[0]){
-          return res.status(400).json({
-            msg:"usuario no encontrado"
-          });
+          return res.status(400).json(
+            ["usuario no encontrado"]
+          );
        };
+
+// se extrae el ID del usuario, el nombre de usuario y el correo electrónico del primer registro devuelto por la consulta userFound
       const { idUser, userName, userEmail } = await userFound.recordset[0];
       return res.status(200).json({
         id:idUser,
         username:userName,
         email:userEmail
       })
+
+//Si ocurre algún error durante el proceso, se captura y se devuelve un estado 500 con un mensaje indicando que hubo un error en el servidor
     } catch (error) {
       console.log(error)
       return res.status(500).json({
@@ -138,4 +154,30 @@ export const profile = async(req,res)=>{
       })
     }
    
+}
+//verifica si hay un token y si no, regresará que noe stas autorizado
+export const verifyToken = async (req,res)=> {
+  try {
+
+    const pool = await getConnection();
+    const { token } =req.cookies;
+
+    if(!token){
+      res.status(401).json({msg:"No estas autorizado"});
+    }
+    jwt.verify(token,config.SECRET,async(err,user)=>{
+      if(err)return res.status(401).json({msg:"no autorizado"});
+      
+      const userFound = await pool.request().input("idUser",sql.Int,user.id).query(querys.checkUserById);
+      const { idUser, userName,userEmail } = userFound.recordset[0];
+      return res.status(200).json({
+        idUser,
+        userName,
+        userEmail,
+      })
+    });
+    
+  } catch (error) {
+    console.error(error.message)
+  }
 }

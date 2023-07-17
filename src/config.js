@@ -1,3 +1,4 @@
+// Configuracion de las variables globales
 import { config } from "dotenv";
 
 config();

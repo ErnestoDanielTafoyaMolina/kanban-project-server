@@ -15,7 +15,10 @@ const app = express();
 app.set("port",config.port);
 
 //middlewares
-app.use(cors());
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true
+}));
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(cookieParser());
